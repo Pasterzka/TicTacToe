@@ -15,10 +15,16 @@ class gameClass{
     var isPvE: Bool = false
     var currentPlayer: String = "X"
     var startPlayer: String = "X"
+    var player: String = "X"
+    var ai: String = "O"
+    
+    // AI
+    var aiPlayer: AiPlayer
     
     init() {
         self.board = boardClass()
         self.score = scoreStruct()
+        self.aiPlayer = AiPlayer()
     }
     
     // printing game
@@ -47,6 +53,12 @@ class gameClass{
                 correctMove = false
             }
         }
+    }
+    
+    func makeMoveAI() -> Void{
+        print("AI is thinking...")
+        let move = aiPlayer.getBestMove(board: board.board, aiMark: ai, playerMark: player) ?? 0
+        board.board[Int(move)] = currentPlayer
     }
     
     // check is some one winnig
@@ -79,11 +91,20 @@ class gameClass{
     // game loop
     func gameLoop() -> Void{
         
+        print("Select Mode: 1. PvP, 2. PvE")
+        if let choice = readLine(), choice == "2" {
+            isPvE = true
+        }
+        
         while isGameOn{
             
             score.printScores()
             printGame()
-            makeMovePlayer()
+            if isPvE && currentPlayer == ai {
+                makeMoveAI()
+            } else {
+                makeMovePlayer()
+            }
             
             if checkWinner(){
                 isGameOn = false
@@ -111,6 +132,8 @@ class gameClass{
                     board.board = Array(repeating: " ", count: 9)
                     isGameOn = true
                     startPlayer = (startPlayer == "X") ? "O" : "X"
+                    //player = (player == "X") ? "O" : "X"
+                    //ai = (ai == "X") ? "O" : "X"
                     currentPlayer = startPlayer
                 }else{
                     print("Thank you for a game! BYE!")
